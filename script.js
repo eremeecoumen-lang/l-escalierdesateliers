@@ -122,7 +122,7 @@ function getEra(progress = getArchiveProgress()) {
 }
 
 function updateMotionDuration(jumpDistance = 1, isRushing = false) {
-  const duration = isRushing ? 920 : Math.min(2600, 1320 + Math.max(0, jumpDistance - 1) * 34);
+  const duration = isRushing ? 1120 : Math.min(3000, 1660 + Math.max(0, jumpDistance - 1) * 42);
   document.documentElement.style.setProperty("--step-duration", `${duration}ms`);
 }
 
@@ -139,37 +139,44 @@ function getStepMetrics(distance) {
   let y = 0;
   let z = 0;
   let rotateZ = 0;
+  let rotateX = 0;
+  let rotateY = 0;
   let scale = 1;
   let blur = 0;
   let opacity = 1;
   let brightness = 1;
 
   if (distance < 0) {
-    const angle = distance * 38 - 12;
+    const angle = distance * 34 - 8;
     const radians = angle * (Math.PI / 180);
-    const orbitRadius = Math.max(radius - magnitude * 20, radius * 0.42);
-    x = Math.sin(radians) * orbitRadius * 0.58;
-    y = -112 - magnitude * 39 + Math.cos(radians) * 32;
-    z = -magnitude * 225;
+    const orbitRadius = Math.max(radius - magnitude * 18, radius * 0.36);
+    x = Math.sin(radians) * orbitRadius * 0.48;
+    y = -92 - magnitude * 32 + Math.cos(radians) * 28;
+    z = -magnitude * 255;
     rotateZ = angle * 0.12;
-    scale = Math.max(0.38, 0.92 - magnitude * 0.1);
-    blur = Math.min(7, 0.9 + magnitude * 0.62);
-    opacity = Math.max(0.13, 0.56 - magnitude * 0.055);
-    brightness = Math.max(0.9, 0.99 - magnitude * 0.018);
+    rotateX = 2 + magnitude * 0.8;
+    rotateY = Math.sin(radians) * -2.6;
+    scale = Math.max(0.44, 0.94 - magnitude * 0.082);
+    blur = Math.min(4.2, 0.35 + magnitude * 0.36);
+    opacity = Math.max(0.18, 0.62 - magnitude * 0.042);
+    brightness = Math.max(0.96, 1.01 - magnitude * 0.006);
   }
 
   if (distance > 0) {
-    const angle = distance * 44 - 18;
+    const angle = distance * 38 - 14;
     const radians = angle * (Math.PI / 180);
-    const orbitRadius = Math.max(radius - magnitude * 16, radius * 0.46);
-    x = Math.sin(radians) * orbitRadius * 0.76;
-    y = 74 + magnitude * 44 + Math.cos(radians) * 42;
-    z = -magnitude * 170;
+    const orbitRadius = Math.max(radius - magnitude * 26, radius * 0.28);
+    const depthPull = 1 / (1 + magnitude * 0.08);
+    x = Math.sin(radians) * orbitRadius * 0.48 * depthPull;
+    y = 58 + magnitude * 37 + Math.cos(radians) * 34;
+    z = -magnitude * 235;
     rotateZ = angle * 0.11;
-    scale = Math.max(0.38, 0.93 - magnitude * 0.086);
-    blur = Math.min(6.5, magnitude * 0.58);
-    opacity = Math.max(0.14, 0.82 - magnitude * 0.082);
-    brightness = Math.max(0.92, 1 - magnitude * 0.012);
+    rotateX = -1.5 - magnitude * 1.1;
+    rotateY = Math.sin(radians) * 3.2;
+    scale = Math.max(0.42, 0.95 - magnitude * 0.075);
+    blur = Math.min(4.8, magnitude * 0.34);
+    opacity = Math.max(0.2, 0.86 - magnitude * 0.064);
+    brightness = Math.max(0.98, 1.01 - magnitude * 0.004);
   }
 
   if (distance === 0) {
@@ -177,19 +184,30 @@ function getStepMetrics(distance) {
     y = 16;
     z = 46;
     rotateZ = -1.5;
+    rotateX = 0;
+    rotateY = 0;
     scale = 1;
     blur = 0;
     opacity = 1;
-    brightness = 1.04;
+    brightness = 1.06;
   }
 
-  return { x, y, z, rotateZ, scale, blur, opacity, brightness };
+  return { x, y, z, rotateZ, rotateX, rotateY, scale, blur, opacity, brightness };
 }
 
 function applyStepPosition(step, distance, isDeparted) {
   const metrics = getStepMetrics(distance);
-  step.style.transform = `translate(-50%, -50%) translate3d(${metrics.x}px, ${metrics.y}px, ${metrics.z}px) rotateZ(${metrics.rotateZ}deg) scale(${metrics.scale})`;
-  step.style.filter = `blur(${metrics.blur}px) brightness(${metrics.brightness})`;
+  if (isDeparted) {
+    metrics.x *= 0.32;
+    metrics.y -= 18;
+    metrics.z -= 330;
+    metrics.scale = Math.max(0.5, metrics.scale * 0.92);
+    metrics.blur = Math.max(metrics.blur, 1.2);
+    metrics.opacity = Math.max(0.18, metrics.opacity * 0.82);
+  }
+
+  step.style.transform = `translate(-50%, -50%) translate3d(${metrics.x}px, ${metrics.y}px, ${metrics.z}px) rotateX(${metrics.rotateX}deg) rotateY(${metrics.rotateY}deg) rotateZ(${metrics.rotateZ}deg) scale(${metrics.scale})`;
+  step.style.filter = `blur(${metrics.blur}px) brightness(${metrics.brightness}) saturate(1.02)`;
   step.style.opacity = metrics.opacity;
   step.style.setProperty("--depth", String(Math.abs(distance)));
   step.style.zIndex = String(isDeparted ? 80 : 140 - Math.abs(distance));
@@ -485,55 +503,55 @@ function render() {
   app.dataset.era = getEra(progress);
   app.style.setProperty("--archive-progress", String(progress));
   const abyss = progress ** 1.35;
-  app.style.setProperty("--depth-wash", (abyss * 0.42).toFixed(3));
-  app.style.setProperty("--depth-light", Math.max(0.025, 0.22 - abyss * 0.18).toFixed(3));
-  app.style.setProperty("--depth-top-light", Math.max(0.015, 0.24 - abyss * 0.22).toFixed(3));
-  app.style.setProperty("--depth-upper-light", Math.max(0.015, 0.17 - abyss * 0.15).toFixed(3));
-  app.style.setProperty("--depth-dark", (abyss * 0.62).toFixed(3));
-  app.style.setProperty("--depth-overlay", (0.14 + abyss * 0.86).toFixed(3));
-  app.style.setProperty("--abyss-core", (abyss * 0.34).toFixed(3));
-  app.style.setProperty("--abyss-bottom", (abyss * 0.5).toFixed(3));
-  const darkMix = smoothStep((progress - 0.34) / 0.38);
-  const inkMix = progress < 0.62 ? 0 : smoothStep((progress - 0.62) / 0.055);
-  const inkValue = Math.round(20 + inkMix * 224);
-  const mutedValue = Math.round(90 + inkMix * 130);
-  const paperValue = Math.round(255 - darkMix * 226);
-  const paperBottomValue = Math.round(248 - darkMix * 228);
-  const dialogPaperValue = Math.round(255 - darkMix * 218);
-  const dialogBottomValue = Math.round(248 - darkMix * 220);
+  app.style.setProperty("--depth-wash", (abyss * 0.28).toFixed(3));
+  app.style.setProperty("--depth-light", Math.max(0.08, 0.26 - abyss * 0.12).toFixed(3));
+  app.style.setProperty("--depth-top-light", Math.max(0.08, 0.28 - abyss * 0.14).toFixed(3));
+  app.style.setProperty("--depth-upper-light", Math.max(0.06, 0.2 - abyss * 0.12).toFixed(3));
+  app.style.setProperty("--depth-dark", (abyss * 0.46).toFixed(3));
+  app.style.setProperty("--depth-overlay", (0.16 + abyss * 0.5).toFixed(3));
+  app.style.setProperty("--abyss-core", (abyss * 0.24).toFixed(3));
+  app.style.setProperty("--abyss-bottom", (abyss * 0.38).toFixed(3));
+  const darkMix = smoothStep((progress - 0.46) / 0.54);
+  const inkMix = 0;
+  const inkValue = Math.round(18 + darkMix * 12);
+  const mutedValue = Math.round(84 + darkMix * 22);
+  const paperValue = Math.round(255 - darkMix * 18);
+  const paperBottomValue = Math.round(248 - darkMix * 22);
+  const dialogPaperValue = Math.round(255 - darkMix * 14);
+  const dialogBottomValue = Math.round(248 - darkMix * 18);
   app.style.setProperty("--read-ink-rgb", `${inkValue}, ${inkValue}, ${inkValue}`);
   app.style.setProperty("--muted-ink-rgb", `${mutedValue}, ${mutedValue + 4}, ${mutedValue + 4}`);
   app.style.setProperty("--active-paper-rgb", `${paperValue}, ${paperValue + 2}, ${paperValue + 1}`);
   app.style.setProperty("--active-paper-bottom-rgb", `${paperBottomValue}, ${paperBottomValue + 4}, ${paperBottomValue + 3}`);
-  app.style.setProperty("--active-paper-alpha", (0.98 - darkMix * 0.05).toFixed(3));
-  app.style.setProperty("--active-edge-rgb", inkMix > 0.5 ? "230, 242, 238" : "255, 255, 255");
-  app.style.setProperty("--active-edge-alpha", (0.72 - darkMix * 0.36).toFixed(3));
-  app.style.setProperty("--active-glow-rgb", inkMix > 0.5 ? "214, 232, 226" : "255, 255, 255");
-  app.style.setProperty("--active-glow-alpha", (0.18 - darkMix * 0.06).toFixed(3));
-  app.style.setProperty("--active-sheen", (0.16 - darkMix * 0.08).toFixed(3));
+  app.style.setProperty("--active-paper-alpha", (0.98 - darkMix * 0.01).toFixed(3));
+  app.style.setProperty("--active-edge-rgb", "255, 255, 255");
+  app.style.setProperty("--active-edge-alpha", (0.7 + darkMix * 0.12).toFixed(3));
+  app.style.setProperty("--active-glow-rgb", "255, 255, 255");
+  app.style.setProperty("--active-glow-alpha", (0.2 + darkMix * 0.18).toFixed(3));
+  app.style.setProperty("--active-sheen", (0.18 + darkMix * 0.08).toFixed(3));
   app.style.setProperty("--dialog-paper-rgb", `${dialogPaperValue}, ${dialogPaperValue + 2}, ${dialogPaperValue + 1}`);
   app.style.setProperty("--dialog-paper-bottom-rgb", `${dialogBottomValue}, ${dialogBottomValue + 4}, ${dialogBottomValue + 3}`);
-  app.style.setProperty("--dialog-paper-alpha", (0.97 - darkMix * 0.03).toFixed(3));
-  app.style.setProperty("--read-shadow-rgb", inkMix > 0.5 ? "0, 0, 0" : "255, 255, 255");
-  app.style.setProperty("--read-shadow-alpha", (0.38 - Math.abs(inkMix - 0.5) * 0.24).toFixed(3));
-  app.style.setProperty("--read-glow-rgb", inkMix > 0.5 ? "255, 255, 255" : "255, 255, 255");
-  app.style.setProperty("--read-glow-alpha", (0.08 + inkMix * 0.12).toFixed(3));
-  const ghostDarkMix = smoothStep((progress - 0.22) / 0.5);
-  const ghostInkMix = progress < 0.56 ? 0 : smoothStep((progress - 0.56) / 0.14);
-  const ghostPaperValue = Math.round(255 - ghostDarkMix * 220);
-  const ghostPaperBottomValue = Math.round(244 - ghostDarkMix * 218);
-  const ghostInkValue = Math.round(30 + ghostInkMix * 210);
-  const ghostMutedAlpha = 0.68 - ghostDarkMix * 0.08;
+  app.style.setProperty("--dialog-paper-alpha", (0.98 - darkMix * 0.01).toFixed(3));
+  app.style.setProperty("--read-shadow-rgb", "255, 255, 255");
+  app.style.setProperty("--read-shadow-alpha", (0.3 + darkMix * 0.12).toFixed(3));
+  app.style.setProperty("--read-glow-rgb", "255, 255, 255");
+  app.style.setProperty("--read-glow-alpha", (0.09 + darkMix * 0.08).toFixed(3));
+  const ghostDarkMix = smoothStep((progress - 0.28) / 0.62);
+  const ghostInkMix = 0;
+  const ghostPaperValue = Math.round(255 - ghostDarkMix * 58);
+  const ghostPaperBottomValue = Math.round(244 - ghostDarkMix * 64);
+  const ghostInkValue = Math.round(30 + ghostDarkMix * 24);
+  const ghostMutedAlpha = 0.62 - ghostDarkMix * 0.06;
   app.style.setProperty("--ghost-paper-rgb", `${ghostPaperValue}, ${ghostPaperValue + 2}, ${ghostPaperValue + 1}`);
   app.style.setProperty("--ghost-paper-bottom-rgb", `${ghostPaperBottomValue}, ${ghostPaperBottomValue + 4}, ${ghostPaperBottomValue + 3}`);
-  app.style.setProperty("--ghost-paper-alpha", (0.78 - ghostDarkMix * 0.2).toFixed(3));
-  app.style.setProperty("--ghost-paper-bottom-alpha", (0.58 - ghostDarkMix * 0.16).toFixed(3));
+  app.style.setProperty("--ghost-paper-alpha", (0.7 - ghostDarkMix * 0.06).toFixed(3));
+  app.style.setProperty("--ghost-paper-bottom-alpha", (0.5 - ghostDarkMix * 0.05).toFixed(3));
   app.style.setProperty("--ghost-ink-rgb", `${ghostInkValue}, ${ghostInkValue}, ${ghostInkValue}`);
   app.style.setProperty("--ghost-ink-alpha", ghostMutedAlpha.toFixed(3));
-  app.style.setProperty("--ghost-edge-rgb", ghostInkMix > 0.5 ? "225, 236, 232" : "255, 255, 255");
-  app.style.setProperty("--ghost-edge-alpha", (0.32 - ghostDarkMix * 0.12).toFixed(3));
-  app.style.setProperty("--ghost-glow-rgb", ghostInkMix > 0.5 ? "255, 255, 255" : "255, 255, 255");
-  app.style.setProperty("--ghost-glow-alpha", (0.04 + ghostInkMix * 0.08).toFixed(3));
+  app.style.setProperty("--ghost-edge-rgb", "255, 255, 255");
+  app.style.setProperty("--ghost-edge-alpha", (0.34 + ghostDarkMix * 0.04).toFixed(3));
+  app.style.setProperty("--ghost-glow-rgb", "255, 255, 255");
+  app.style.setProperty("--ghost-glow-alpha", (0.06 + ghostDarkMix * 0.04).toFixed(3));
   reader.dataset.era = `${Math.round(progress * 100)}% de descente`;
   activeText.textContent = activeEntry.text;
   positionLabel.textContent = `Marche ${activeIndex + 1} sur ${entries.length}`;
@@ -557,10 +575,10 @@ function pulseMotion(isRushing) {
   motionTimer = window.setTimeout(() => {
     staircaseShell.classList.remove("is-moving");
     staircaseShell.classList.remove("is-long-jump");
-  }, 980);
+  }, 1280);
   rushTimer = window.setTimeout(() => {
     staircaseShell.classList.remove("is-rushing");
-  }, 980);
+  }, 1280);
 }
 
 function primeAudio() {

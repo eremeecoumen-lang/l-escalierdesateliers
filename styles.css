@@ -312,8 +312,8 @@ textarea:focus-visible {
   z-index: 1;
   min-height: 0;
   overflow: hidden;
-  perspective: 980px;
-  perspective-origin: 50% 12%;
+  perspective: 1180px;
+  perspective-origin: 50% 8%;
 }
 
 .staircase-shell::before {
@@ -326,7 +326,7 @@ textarea:focus-visible {
   aspect-ratio: 1;
   border-radius: 50%;
   background:
-    radial-gradient(circle, rgba(8, 13, 16, calc(0.24 + var(--archive-progress, 0) * 0.3)) 0 7%, rgba(39, 51, 54, calc(0.12 + var(--archive-progress, 0) * 0.16)) 24%, rgba(255, 255, 255, 0) 62%);
+    radial-gradient(circle, rgba(8, 13, 16, calc(0.16 + var(--archive-progress, 0) * 0.22)) 0 7%, rgba(39, 51, 54, calc(0.09 + var(--archive-progress, 0) * 0.12)) 24%, rgba(255, 255, 255, 0) 62%);
   box-shadow:
     inset 0 0 84px rgba(23, 35, 37, 0.09),
     0 52px 150px rgba(70, 87, 91, 0.18);
@@ -349,7 +349,7 @@ textarea:focus-visible {
 
 .staircase-shell.is-rushing .step,
 .staircase-shell.is-rushing .section-marker {
-  transition-duration: 920ms;
+  transition-duration: 1120ms;
 }
 
 .staircase-shell.is-long-jump::before,
@@ -494,7 +494,7 @@ textarea:focus-visible {
   top: 45%;
   width: clamp(300px, 48vw, 720px);
   min-height: 112px;
-  max-height: min(52vh, 440px);
+  max-height: min(56vh, 480px);
   overflow: hidden;
   padding: clamp(18px, 2.4vw, 28px);
   border: 1px solid rgba(70, 87, 91, 0.2);
@@ -527,13 +527,24 @@ textarea:focus-visible {
   transform-origin: top;
 }
 
+.step::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0) 58%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .step::after {
   content: "";
   position: absolute;
   inset: auto 0 0;
   height: 34%;
   border-radius: 0 0 4px 4px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.96));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.72));
   pointer-events: none;
 }
 
@@ -544,8 +555,9 @@ textarea:focus-visible {
   color: rgb(var(--read-ink-rgb, 20, 20, 18));
   box-shadow:
     0 0 0 1px rgba(var(--active-edge-rgb, 255, 255, 255), var(--active-edge-alpha, 0.72)),
-    0 28px 80px rgba(8, 13, 16, calc(0.12 + var(--archive-progress, 0) * 0.34)),
-    0 0 42px rgba(var(--active-glow-rgb, 255, 255, 255), var(--active-glow-alpha, 0.18));
+    0 34px 92px rgba(8, 13, 16, calc(0.12 + var(--archive-progress, 0) * 0.28)),
+    0 0 64px rgba(var(--active-glow-rgb, 255, 255, 255), var(--active-glow-alpha, 0.18)),
+    0 0 140px rgba(235, 244, 239, calc(var(--active-glow-alpha, 0.18) * 0.48));
 }
 
 .app[data-era="deep"] .step.active,
@@ -555,9 +567,9 @@ textarea:focus-visible {
     radial-gradient(ellipse at 48% 22%, rgba(255, 255, 255, var(--active-sheen, 0.12)), rgba(255, 255, 255, 0) 58%),
     linear-gradient(180deg, rgba(var(--active-paper-rgb, 38, 45, 45), var(--active-paper-alpha, 0.96)), rgba(var(--active-paper-bottom-rgb, 16, 22, 23), var(--active-paper-alpha, 0.96)));
   box-shadow:
-    0 0 0 1px rgba(235, 244, 239, 0.22),
-    0 34px 92px rgba(5, 9, 12, 0.48),
-    0 0 54px rgba(220, 234, 228, var(--active-glow-alpha, 0.16));
+    0 0 0 1px rgba(235, 244, 239, 0.42),
+    0 36px 96px rgba(5, 9, 12, 0.38),
+    0 0 76px rgba(255, 255, 255, var(--active-glow-alpha, 0.16));
 }
 
 .step:not(.active) {
@@ -569,7 +581,7 @@ textarea:focus-visible {
     );
   color: rgba(var(--ghost-ink-rgb, 22, 21, 19), var(--ghost-ink-alpha, 0.74));
   box-shadow:
-    0 16px 42px rgba(29, 34, 34, 0.07),
+    0 18px 46px rgba(29, 34, 34, calc(0.06 + var(--archive-progress, 0) * 0.08)),
     inset 0 0 0 1px rgba(var(--ghost-edge-rgb, 255, 255, 255), var(--ghost-edge-alpha, 0.35));
 }
 
@@ -616,12 +628,14 @@ textarea:focus-visible {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
   font-size: clamp(1.05rem, 1.8vw, 1.45rem);
-  line-height: 1.34;
+  line-height: 1.36;
 }
 
 .step:not(.active) .step-text {
   color: inherit;
-  text-shadow: 0 0 14px rgba(var(--ghost-glow-rgb, 255, 255, 255), var(--ghost-glow-alpha, 0.06));
+  text-shadow:
+    0 0 12px rgba(var(--ghost-glow-rgb, 255, 255, 255), var(--ghost-glow-alpha, 0.06)),
+    0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .step.active .step-text {
@@ -629,7 +643,7 @@ textarea:focus-visible {
   color: rgb(var(--read-ink-rgb, 20, 20, 18));
   text-shadow:
     0 1px 0 rgba(var(--read-shadow-rgb, 255, 255, 255), var(--read-shadow-alpha, 0.42)),
-    0 0 18px rgba(var(--read-glow-rgb, 255, 255, 255), var(--read-glow-alpha, 0.08));
+    0 0 22px rgba(var(--read-glow-rgb, 255, 255, 255), var(--read-glow-alpha, 0.08));
   transition: color var(--step-duration) ease, text-shadow var(--step-duration) ease;
 }
 
