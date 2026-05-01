@@ -1,16 +1,13 @@
-const STORAGE_KEY = "helical-text-staircase-base-v1";
 const SOUND_STORAGE_KEY = "helical-text-staircase-sound-v1";
 const SOUND_FILE = "assets/scroll-wheel.mp3";
 const SOUND_START = 8.18;
 const SOUND_DURATION = 185;
 const SOUND_RUSH_DURATION = 150;
-const API_BASE = window.location.protocol === "file:" ? "" : "/api";
 
 const app = document.querySelector(".app");
 const staircase = document.querySelector("#staircase");
 const staircaseShell = document.querySelector(".staircase-shell");
 const emptyState = document.querySelector("#emptyState");
-const textForm = document.querySelector("#textForm");
 const textInput = document.querySelector("#textInput");
 const counter = document.querySelector("#counter");
 const activeText = document.querySelector("#activeText");
@@ -44,7 +41,7 @@ const dialogReaderBtn = document.querySelector("#dialogReaderBtn");
 const dialogNewerBtn = document.querySelector("#dialogNewerBtn");
 const dialogOlderBtn = document.querySelector("#dialogOlderBtn");
 const sectionMapTip = document.querySelector("#sectionMapTip");
-const textLimit = Number(textInput.maxLength) || 6000;
+const textLimit = Number(textInput?.maxLength) || 6000;
 const svgNamespace = "http://www.w3.org/2000/svg";
 
 let entries = loadEntries();
@@ -60,29 +57,25 @@ let soundPlayers = [];
 let soundPlayerIndex = 0;
 let soundEnabled = localStorage.getItem(SOUND_STORAGE_KEY) !== "off";
 let lastJumpDistance = 1;
-let sharedMode = false;
 
 function loadEntries() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-
-  if (!stored) {
-    return getDefaultEntries();
-  }
-
-  try {
-    const parsed = JSON.parse(stored);
-    if (Array.isArray(parsed) && parsed.every((entry) => entry.text && entry.createdAt)) {
-      return parsed.map(normalizeEntry);
-    }
-  } catch (error) {
-    console.warn("Impossible de lire les textes sauvegardes.", error);
-  }
-
   return getDefaultEntries();
 }
 
 function getDefaultEntries() {
-  return [];
+  const source = Array.isArray(window.ARCHIVES_TEXTUELLES) ? window.ARCHIVES_TEXTUELLES : [];
+  return source
+    .filter((entry) => entry && typeof entry.text === "string" && entry.text.trim())
+    .map((entry, index) =>
+      normalizeEntry(
+        {
+          ...entry,
+          text: entry.text.trim(),
+          createdAt: entry.createdAt || "2026-01-01T00:00:00.000Z"
+        },
+        index
+      )
+    );
 }
 
 function normalizeEntry(entry, index = 0) {
@@ -92,70 +85,6 @@ function normalizeEntry(entry, index = 0) {
     text: entry.text,
     createdAt: entry.createdAt
   };
-}
-
-function saveEntries() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  } catch (error) {
-    console.warn("Impossible de sauvegarder tous les textes localement.", error);
-  }
-}
-
-async function loadSharedEntries() {
-  if (!API_BASE) {
-    return false;
-  }
-
-  try {
-    const response = await fetch(`${API_BASE}/texts`, { cache: "no-store" });
-    if (!response.ok) {
-      return false;
-    }
-
-    const sharedEntries = await response.json();
-    if (!Array.isArray(sharedEntries)) {
-      return false;
-    }
-
-    entries = sharedEntries.map(normalizeEntry);
-    sharedMode = true;
-    return true;
-  } catch (error) {
-    console.warn("Impossible de charger l'escalier partage.", error);
-    return false;
-  }
-}
-
-async function createEntry(text) {
-  const entry = {
-    id: `entry-${Date.now()}`,
-    text,
-    createdAt: new Date().toISOString()
-  };
-
-  if (!API_BASE) {
-    return normalizeEntry(entry);
-  }
-
-  try {
-    const response = await fetch(`${API_BASE}/texts`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const created = await response.json();
-    sharedMode = true;
-    return normalizeEntry(created);
-  } catch (error) {
-    console.warn("Publication partagee impossible, sauvegarde locale utilisee.", error);
-    return normalizeEntry(entry);
-  }
 }
 
 function formatDate(value) {
@@ -749,6 +678,10 @@ async function toggleImmersive() {
 }
 
 function updateCounter() {
+  if (!counter || !textInput) {
+    return;
+  }
+
   counter.textContent = `${textInput.value.length}/${textLimit}`;
 }
 
@@ -851,31 +784,9 @@ function jumpToIndex(next, options = {}) {
   render();
 }
 
-textForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const text = textInput.value.trim();
-  if (!text) {
-    textInput.focus();
-    return;
-  }
-
-  const wasEmpty = entries.length === 0;
-  const createdEntry = await createEntry(text);
-  entries.unshift(createdEntry);
-  lastActiveIndex = wasEmpty ? 0 : activeIndex + 1;
-  activeIndex = 0;
-  pulseMotion(false);
-  textInput.value = "";
-  textForm.closest("details").open = false;
-  updateCounter();
-  if (!sharedMode) {
-    saveEntries();
-  }
-  render();
-});
-
-textInput.addEventListener("input", updateCounter);
+if (textInput) {
+  textInput.addEventListener("input", updateCounter);
+}
 
 olderBtn.addEventListener("click", () => move(1));
 newerBtn.addEventListener("click", () => move(-1));
@@ -984,7 +895,6 @@ window.addEventListener("resize", render);
 async function init() {
   updateSoundButton();
   updateCounter();
-  await loadSharedEntries();
   render();
 }
 

@@ -90,19 +90,7 @@
         </footer>
       </section>
 
-      <aside class="composer" aria-label="Publier un texte">
-        <details class="composer-drawer" open>
-          <summary>Nouvelle marche</summary>
-          <form id="textForm">
-            <label for="textInput">Texte</label>
-            <textarea id="textInput" name="text" rows="8" maxlength="6000" placeholder="Écris ici. Le texte apparaîtra tout en haut de l’escalier."></textarea>
-            <div class="form-row">
-              <output id="counter" for="textInput">0/6000</output>
-              <button class="primary-button" type="submit">Publier</button>
-            </div>
-          </form>
-        </details>
-
+      <aside class="composer" aria-label="Lecture du texte actif">
         <div class="reader">
           <p class="reader-label">Marche active</p>
           <article id="activeText"></article>
@@ -128,6 +116,7 @@
       </footer>
     </dialog>
 
+    <script src="textes-eleves.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
