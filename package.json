@@ -1,0 +1,12 @@
+{
+  "name": "archives-textuelles",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Escalier textuel partage avec moderation.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

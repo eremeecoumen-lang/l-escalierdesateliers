@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>archives textuelles</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app" aria-label="archives textuelles">
+      <section class="stage-panel" aria-label="Navigation dans les textes">
+        <header class="topbar">
+          <div>
+            <p class="kicker">oscar semillon</p>
+            <h1>archives textuelles</h1>
+          </div>
+          <nav class="controls" aria-label="Contrôles de navigation">
+            <button class="icon-button" id="searchBtn" type="button" aria-label="Rechercher dans les archives" title="Rechercher">
+              ⌕
+            </button>
+            <button class="icon-button" id="soundBtn" type="button" aria-label="Désactiver le son" title="Son actif" aria-pressed="true">
+              ♪
+            </button>
+            <button class="icon-button" id="immersiveBtn" type="button" aria-label="Activer le mode immersif" title="Mode immersif">
+              ⛶
+            </button>
+            <button class="icon-button" id="newerBtn" type="button" aria-label="Remonter vers un texte plus récent" title="Plus récent">
+              ↑
+            </button>
+            <button class="icon-button" id="olderBtn" type="button" aria-label="Descendre vers un texte plus ancien" title="Plus ancien">
+              ↓
+            </button>
+          </nav>
+        </header>
+
+        <section class="search-panel" id="searchPanel" aria-label="Recherche dans les archives" hidden>
+          <div class="search-box">
+            <label for="searchInput">Recherche</label>
+            <input id="searchInput" type="search" autocomplete="off" placeholder="Mot, phrase, lieu...">
+            <button class="dialog-close" id="searchCloseBtn" type="button" aria-label="Fermer la recherche" title="Fermer">×</button>
+          </div>
+          <div class="search-results" id="searchResults" role="list"></div>
+        </section>
+
+        <div class="staircase-shell">
+          <div class="edifice" aria-hidden="true">
+            <span class="edifice-core"></span>
+            <span class="edifice-axis"></span>
+            <span class="edifice-void"></span>
+            <span class="edifice-ring ring-a"></span>
+            <span class="edifice-ring ring-b"></span>
+            <span class="edifice-ring ring-c"></span>
+            <span class="edifice-column column-a"></span>
+            <span class="edifice-column column-b"></span>
+            <span class="edifice-column column-c"></span>
+            <span class="edifice-column column-d"></span>
+            <span class="edifice-column column-e"></span>
+            <span class="edifice-column column-f"></span>
+          </div>
+          <div class="depth-lines" aria-hidden="true"></div>
+          <ol class="staircase" id="staircase" aria-live="polite"></ol>
+          <div class="empty-state" id="emptyState">
+            <p>aucune marche</p>
+          </div>
+          <aside class="section-map" aria-label="Position dans la coupe hélicoïdale de l'escalier">
+            <div class="section-map-title">Coupe</div>
+            <svg viewBox="0 0 180 170" role="img" aria-labelledby="sectionMapTitle sectionMapDesc">
+              <title id="sectionMapTitle">Coupe hélicoïdale d'oscar semillon</title>
+              <desc id="sectionMapDesc">Le point indique la marche active sur une colonne en colimaçon.</desc>
+              <path class="section-mast" d="M 90 14 L 90 148"></path>
+              <path class="section-rail ghost" id="sectionBackRail"></path>
+              <path class="section-rail" id="sectionFrontRail"></path>
+              <path class="section-steps" id="sectionSteps"></path>
+              <g id="sectionTicks"></g>
+              <circle class="section-marker" id="sectionMarker" r="5"></circle>
+              <text class="section-dimension" x="26" y="52">Ø 160</text>
+              <text class="section-dimension" id="sectionTotalLabel" x="26" y="78">↓ 124</text>
+              <text class="section-map-count" id="sectionMapCount" x="150" y="160" text-anchor="end">1/1</text>
+            </svg>
+            <div class="section-map-tip" id="sectionMapTip" hidden>Marche 1</div>
+          </aside>
+          <div class="floor" id="floor" aria-hidden="true">
+            <span>Pied de l’escalier</span>
+          </div>
+        </div>
+
+        <footer class="statusbar">
+          <span id="positionLabel">Marche 1</span>
+          <span id="dateLabel"></span>
+        </footer>
+      </section>
+
+      <aside class="composer" aria-label="Publier un texte">
+        <details class="composer-drawer" open>
+          <summary>Nouvelle marche</summary>
+          <form id="textForm">
+            <label for="textInput">Texte</label>
+            <textarea id="textInput" name="text" rows="8" maxlength="6000" placeholder="Écris ici. Le texte apparaîtra tout en haut de l’escalier."></textarea>
+            <div class="form-row">
+              <output id="counter" for="textInput">0/6000</output>
+              <button class="primary-button" type="submit">Publier</button>
+            </div>
+          </form>
+        </details>
+
+        <div class="reader">
+          <p class="reader-label">Marche active</p>
+          <article id="activeText"></article>
+        </div>
+      </aside>
+    </main>
+
+    <dialog class="text-dialog" id="textDialog" aria-labelledby="dialogTitle">
+      <div class="dialog-chrome">
+        <div>
+          <p class="dialog-kicker" id="dialogMeta">Marche 1</p>
+          <h2 id="dialogTitle"></h2>
+        </div>
+        <button class="dialog-close" id="dialogCloseBtn" type="button" aria-label="Fermer la lecture complète" title="Fermer">
+          ×
+        </button>
+      </div>
+      <article class="dialog-text" id="dialogText"></article>
+      <footer class="dialog-footer">
+        <button class="dialog-nav" id="dialogReaderBtn" type="button" aria-pressed="false">Mode lecture</button>
+        <button class="dialog-nav" id="dialogNewerBtn" type="button">↑ Plus récent</button>
+        <button class="dialog-nav" id="dialogOlderBtn" type="button">Plus ancien ↓</button>
+      </footer>
+    </dialog>
+
+    <script src="script.js"></script>
+  </body>
+</html>

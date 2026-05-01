@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>modération - archives textuelles</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+      body {
+        overflow: auto;
+      }
+
+      .admin-page {
+        min-height: 100vh;
+        padding: clamp(24px, 5vw, 72px);
+        background: linear-gradient(180deg, #fff, #f2f6f3);
+      }
+
+      .admin-shell {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+
+      .admin-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        align-items: flex-start;
+        margin-bottom: 28px;
+      }
+
+      .admin-head h1 {
+        font-size: clamp(2rem, 5vw, 4.6rem);
+      }
+
+      .login-panel,
+      .admin-item {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.86);
+        box-shadow: 0 18px 48px rgba(29, 34, 34, 0.07);
+      }
+
+      .login-panel {
+        display: grid;
+        gap: 12px;
+        max-width: 420px;
+        padding: 18px;
+      }
+
+      .login-panel input {
+        height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0 14px;
+        font: 1rem ui-sans-serif, system-ui, sans-serif;
+      }
+
+      .admin-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .admin-item {
+        display: grid;
+        gap: 12px;
+        padding: 18px;
+      }
+
+      .admin-meta,
+      .admin-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .admin-meta {
+        color: var(--muted);
+        font: 0.78rem ui-monospace, "Cascadia Mono", "Courier New", monospace;
+      }
+
+      .admin-item.hidden-text {
+        opacity: 0.62;
+      }
+
+      .admin-text {
+        margin: 0;
+        white-space: pre-wrap;
+        font-size: clamp(1.05rem, 2vw, 1.36rem);
+        line-height: 1.5;
+      }
+
+      .admin-actions button,
+      .login-panel button {
+        min-height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0 14px;
+        background: rgba(251, 250, 247, 0.88);
+        font: 700 0.84rem ui-sans-serif, system-ui, sans-serif;
+      }
+
+      .admin-message {
+        min-height: 22px;
+        color: var(--accent-deep);
+        font: 0.86rem ui-sans-serif, system-ui, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="admin-page">
+      <div class="admin-shell">
+        <header class="admin-head">
+          <div>
+            <p class="kicker">oscar semillon</p>
+            <h1>modération</h1>
+          </div>
+          <a class="primary-button" href="/">Voir l'escalier</a>
+        </header>
+
+        <section class="login-panel" id="loginPanel">
+          <label for="adminPassword">Mot de passe administrateur</label>
+          <input id="adminPassword" type="password" autocomplete="current-password">
+          <button type="button" id="loginBtn">Ouvrir la modération</button>
+          <div class="admin-message" id="adminMessage"></div>
+        </section>
+
+        <section class="admin-list" id="adminList" hidden></section>
+      </div>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
